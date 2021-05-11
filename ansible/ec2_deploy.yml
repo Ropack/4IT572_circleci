@@ -43,7 +43,7 @@
 
 - name: Configure EC2
   hosts: launched
-  conection: ssh
+  connection: ssh
   tasks:
     - name: Install docker
       apt:
