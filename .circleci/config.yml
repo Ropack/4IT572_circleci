@@ -24,14 +24,11 @@ jobs:
       - run:
          command: ls
       - run:
-      #   command: echo "$VAULT_PWD" > secret.txt
-         command: echo devopsvaultpass > secret.txt
-      - run:
-         command: cat secret.txt
+         command: echo "$VAULT_PWD" > secret.txt
       - run:
          command: pip3 install ansible boto boto3
       - run:
-         command: ansible-playbook ./ansible/ec2_deploy.yml --vault-password-file secret.txt
+         command: ansible-playbook ./ansible/ec2_deploy.yml --vault-password-file secret.txt --user ubuntu --key-file ~/ansible-ci.pem
 workflows:
   version: 2.1
   build:
