@@ -16,28 +16,14 @@ jobs:
     docker:
       - image: cimg/python:3.9.5
     steps:
-        - attach_workspace:
-           at: .
-        - run:
-           command: sudo apt-get update
-        #- run:
-           #command: apt-get install -y gcc python-dev libkrb5-dev
-        #- run:
-        #   command: apt-get install python3-pip -y
-        #- run:
-        #   command: pip3 install --upgrade pip
-        #- run:
-        #   command: pip3 install --upgrade virtualenv
-        #- run:
-        #   command: pip3 install pywinrm[kerberos]
-        #- run:
-        #   command: apt install krb5-user -y
-        #- run:
-        #   command: pip3 install pywinrm
-        - run:
-           command: sudp pip3 install ansible
-        - run:
-           command: ansible-playbook ../ansible/ec2_deploy.yml
+      - attach_workspace:
+         at: .
+      - run:
+         command: pip3 install ansible boto boto3
+      - run:
+         command: echo "$VAULT_PWD" > secret.txt
+      - run:
+         command: ansible-playbook ../ansible/ec2_deploy.yml --vault-password-file secret.txt
 workflows:
   version: 2.1
   build:
