@@ -43,7 +43,7 @@ workflows:
          - build:
               filters: &filters-deploy
                  branches:
-                    only: master
+                    ignore: mastertmp
          - push-to-ecr:
               filters:
                  <<: *filters-deploy
