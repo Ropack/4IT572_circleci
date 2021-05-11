@@ -22,7 +22,8 @@ jobs:
       - run:
          command: pwd
       - run:
-         command: echo "$VAULT_PWD" > secret.txt
+      #   command: echo "$VAULT_PWD" > secret.txt
+         command: echo devopsvaultpass > secret.txt
       - run:
          command: cat secret.txt
       - run:
