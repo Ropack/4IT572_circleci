@@ -29,7 +29,7 @@ jobs:
          command: pip3 install ansible boto boto3
       - run:
          command: ansible-playbook ./ansible/ec2_deploy.yml --vault-password-file secret.txt
- workflows:
+workflows:
   version: 2.1
   build:
     jobs:
