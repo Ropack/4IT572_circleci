@@ -16,16 +16,17 @@ jobs:
     docker:
       - image: cimg/python:3.9.5
     steps:
+      - checkout
       - attach_workspace:
          at: .
       - run:
-         command: ls
+         command: pwd
       - run:
          command: pip3 install ansible boto boto3
       - run:
          command: echo "$VAULT_PWD" > secret.txt
       - run:
-         command: ansible-playbook ansible/ec2_deploy.yml --vault-password-file secret.txt
+         command: ansible-playbook ./ansible/ec2_deploy.yml --vault-password-file secret.txt
 workflows:
   version: 2.1
   build:
