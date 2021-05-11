@@ -19,6 +19,8 @@ jobs:
       - attach_workspace:
          at: .
       - run:
+         command: ls
+      - run:
          command: pip3 install ansible boto boto3
       - run:
          command: echo "$VAULT_PWD" > secret.txt
