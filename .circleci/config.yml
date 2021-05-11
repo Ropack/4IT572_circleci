@@ -20,7 +20,7 @@ jobs:
         - attach_workspace:
            at: .
         - run: |
-           apt-get update &&
+           sudo apt-get update &&
            apt-get install -y gcc python-dev libkrb5-dev &&
            apt-get install python3-pip -y &&
            pip3 install --upgrade pip &&
