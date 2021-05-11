@@ -1,18 +1,41 @@
 version: 2.1
-
+orbs:
+  ansible-playbook: orbss/ansible-playbook@0.0.5
 jobs:
-  push-to-ecr:
-    machine:
-      image: ubuntu-2004:202010-01
+  build:
     steps:
       - checkout
-      - run: aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $URL
-      - run: docker build -t $URL/devops:latest -t $URL/devops:$CIRCLE_BUILD_NUM .
-      - run: docker push $URL/devops:$CIRCLE_BUILD_NUM
-      - run: docker push $URL/devops:latest
-
+      - run: npm install
+      - run: npm run test
+      - run: npm run build
+      - persist_to_workspace:
+         root: .
+         paths:
+            - .
+  deploy:
+     steps:
+        - attach_workspace:
+           at: .
+        - run:
+           command: apt-get update && \
+  apt-get install -y gcc python-dev libkrb5-dev && \
+  apt-get install python3-pip -y && \
+  pip3 install --upgrade pip && \
+  pip3 install --upgrade virtualenv && \
+  pip3 install pywinrm[kerberos] && \
+  apt install krb5-user -y && \ 
+  pip3 install pywinrm && \
+  pip3 install ansible
+        - run:
+           command: ansible-playbook ../ansible/ec2_deploy.yml
 workflows:
   version: 2.1
-  aws-cli:
-    jobs: 
-      - push-to-ecr
+  build:
+    jobs:
+      - build
+      - deploy:
+         requires:
+            - build
+         #filters:
+         #   branches:
+         #      only: master
