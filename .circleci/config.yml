@@ -1,10 +1,8 @@
-vse: &vse
-  docker:
-    - image: circleci/node:8.11.3
 version: 2.1
 jobs:
   build:
-    <<: *vse
+    docker:
+    - image: circleci/node:8.11.3
     steps:
       - checkout
       - run: npm install
@@ -15,26 +13,27 @@ jobs:
          paths:
             - .
   deploy:
-    <<: *vse
+    docker:
+      - image: cimg/python:3.9.5
     steps:
         - attach_workspace:
            at: .
         - run:
-           command: sudo apt-get update &&
+           command: sudo apt-get update
         - run:
-           command: apt-get install -y gcc python-dev libkrb5-dev &&           
+           command: apt-get install -y gcc python-dev libkrb5-dev
         - run:
-           command: apt-get install python3-pip -y &&           
+           command: apt-get install python3-pip -y
         - run:
-           command: pip3 install --upgrade pip &&           
+           command: pip3 install --upgrade pip
         - run:
-           command: pip3 install --upgrade virtualenv &&           
+           command: pip3 install --upgrade virtualenv
         - run:
-           command: pip3 install pywinrm[kerberos] &&           
+           command: pip3 install pywinrm[kerberos]
         - run:
-           command: apt install krb5-user -y &&
+           command: apt install krb5-user -y
         - run:
-           command: pip3 install pywinrm &&
+           command: pip3 install pywinrm
         - run:
            command: pip3 install ansible
         - run:
