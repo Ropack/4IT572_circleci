@@ -1,14 +1,60 @@
+- name: Get existing instance id
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Get id
+      ec2_instance_info:
+        aws_access_key: "{{ aws_access_key_id }}"
+        aws_secret_key: "{{ aws_secret_access_key }}"
+        security_token: "{{ aws_session_token }}"
+        region: us-east-1
+      register: ec2_info
+
 - name: Deploy to EC2
   hosts: localhost
   connection: local
   
   tasks:
+    #- name: Generate SSH key pair
+    #  command: ssh-keygen -q -t rsa f ~/rsa_key -C "" -N ""
+    #  args:
+    #    creates: ~/rsa_key
+    #  become: yes
+    #  openssh_keypair:
+    #    path: "~/ansible-ci.pem"
+    #    type: rsa
+    #    state: present
+    #  register: rsa
+
+    - name: Delete a EC2 key if exists
+      ec2_key:
+        aws_access_key: "{{aws_access_key_id}}"
+        aws_secret_key: "{{aws_secret_access_key}}"
+        security_token: "{{aws_session_token}}"
+        name: ansible-ci-key
+        region: us-east-1
+        state: absent
+    
+    - name: Create a new EC2 key
+      ec2_key:
+        aws_access_key: "{{aws_access_key_id}}"
+        aws_secret_key: "{{aws_secret_access_key}}"
+        security_token: "{{aws_session_token}}"
+        name: ansible-ci-key
+        region: us-east-1
+        #key_material: "{{ rsa.public_key }}"
+      register: ec2_key_result
+ 
+    - name: Save private key
+      copy: content="{{ ec2_key_result.key.private_key }}" dest="~/ansible-ci.pem" mode=0600
+      when: ec2_key_result.changed
+
     - name: Launch EC2 instance
       ec2:
         instance_type: t2.micro
         image: ami-085925f297f89fce1
         region: us-east-1
-        key_name: devops
+        key_name: ansible-ci-key
         vpc_subnet_id: subnet-59c6b778
         assign_public_ip: yes
         wait: yes
@@ -57,3 +103,28 @@
       become: yes
     - wait_for:
         port: 80
+
+- name: Cleanup
+  hosts: localhost
+  connection: local
+
+  tasks:
+    - name: Terminate EC2 instance
+      ec2:
+        aws_access_key: "{{aws_access_key_id}}"
+        aws_secret_key: "{{aws_secret_access_key}}"
+        security_token: "{{aws_session_token}}"
+        region: us-east-1
+        instance_ids : "{{ item.instance_id }}"
+        state: absent
+        wait: yes
+      with_items: "{{ec2_info.instances}}"
+
+    - name: Delete a EC2 key
+      ec2_key:
+        aws_access_key: "{{aws_access_key_id}}"
+        aws_secret_key: "{{aws_secret_access_key}}"
+        security_token: "{{aws_session_token}}"
+        name: ansible-ci-key
+        region: us-east-1
+        state: absent
