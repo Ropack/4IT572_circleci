@@ -20,22 +20,22 @@ jobs:
            at: .
         - run:
            command: sudo apt-get update
+        #- run:
+           #command: apt-get install -y gcc python-dev libkrb5-dev
+        #- run:
+        #   command: apt-get install python3-pip -y
+        #- run:
+        #   command: pip3 install --upgrade pip
+        #- run:
+        #   command: pip3 install --upgrade virtualenv
+        #- run:
+        #   command: pip3 install pywinrm[kerberos]
+        #- run:
+        #   command: apt install krb5-user -y
+        #- run:
+        #   command: pip3 install pywinrm
         - run:
-           command: apt-get install -y gcc python-dev libkrb5-dev
-        - run:
-           command: apt-get install python3-pip -y
-        - run:
-           command: pip3 install --upgrade pip
-        - run:
-           command: pip3 install --upgrade virtualenv
-        - run:
-           command: pip3 install pywinrm[kerberos]
-        - run:
-           command: apt install krb5-user -y
-        - run:
-           command: pip3 install pywinrm
-        - run:
-           command: pip3 install ansible
+           command: sudp pip3 install ansible
         - run:
            command: ansible-playbook ../ansible/ec2_deploy.yml
 workflows:
