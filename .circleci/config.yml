@@ -23,7 +23,7 @@ jobs:
       - run:
          command: echo "$VAULT_PWD" > secret.txt
       - run:
-         command: ansible-playbook ../ansible/ec2_deploy.yml --vault-password-file secret.txt
+         command: ansible-playbook ansible/ec2_deploy.yml --vault-password-file secret.txt
 workflows:
   version: 2.1
   build:
