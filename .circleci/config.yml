@@ -8,6 +8,7 @@ jobs:
          - run: npm install
          - run: npm run test
          - run: npm run build
+
    push-to-ecr:
       machine:
          image: ubuntu-2004:202010-01
@@ -17,19 +18,17 @@ jobs:
          - run: docker build -t $URL/devops:latest -t $URL/devops:$CIRCLE_BUILD_NUM .
          - run: docker push $URL/devops:$CIRCLE_BUILD_NUM
          - run: docker push $URL/devops:latest
+
    ansible-deploy:
       docker:
          - image: ropack/ansible:latest
       steps:
          - checkout
          - run:
-              command: pwd
-         - run:
-              command: ls
-         - run:
               command: echo "$VAULT_PWD" > secret.txt
          - run:
               command: ansible-playbook ./ansible/ec2_deploy.yml --vault-password-file secret.txt --user ubuntu --key-file ~/devops.pem
+
 workflows:
    version: 2
    build:
@@ -43,8 +42,10 @@ workflows:
          - build:
               filters: &filters-deploy
                  branches:
-                    ignore: mastertmp
+                    only: master
          - push-to-ecr:
+              requires:
+                 - build
               filters:
                  <<: *filters-deploy
          - ansible-deploy:
